@@ -1,3 +1,6 @@
+<?= $this->extend('layout/template'); ?>
+
+<?= $this->section('content'); ?>
 <div class="container">
     <div class="row">
         <div class="col">
@@ -10,9 +13,10 @@
             <?php foreach ($test as $value) {
                 echo $value . ' ';
             }
-            dd($test); //var_dump lalu die
-            d($test); //var_dump
+            // dd($test); //var_dump lalu die
+            // d($test); //var_dump
             ?>
         </div>
     </div>
 </div>
+<?= $this->endSection(); ?>
