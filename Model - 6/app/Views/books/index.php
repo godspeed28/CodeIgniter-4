@@ -11,20 +11,25 @@
                         <th scope="col">No</th>
                         <th scope="col">Sampul</th>
                         <th scope="col">Judul</th>
+                        <th scope="col">Tahun Terbit</th>
                         <th scope="col">Genre</th>
                         <th scope="col">Penulis</th>
                         <th scope="col">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td><img src="/img/got.jpg" alt="sampul" class="sampul"></td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>undefine</td>
-                        <td><a href="" class="btn btn-success">Detail</a></td>
-                    </tr>
+                    <?php $i = 1; ?>
+                    <?php foreach ($books as $book): ?>
+                        <tr>
+                            <th scope="row"><?= $i++; ?></th>
+                            <td><img src="/img/<?= $book['sampul']; ?>" alt="sampul" class="sampul"></td>
+                            <td><?= $book['judul']; ?></td>
+                            <td><?= $book['tahun_terbit']; ?></td>
+                            <td><?= $book['genre']; ?></td>
+                            <td><?= $book['penulis']; ?></td>
+                            <td><a href="" class="btn btn-success">Detail</a></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>

@@ -57,5 +57,6 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = service('session');
         $this->nama = 'Abe';
+        // $this->booksModel = new \App\Models\BooksModel();
     }
 }
