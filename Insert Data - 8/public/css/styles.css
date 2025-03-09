@@ -1,0 +1,12 @@
+.sampul {
+    width: 100px;
+    height: 100px;
+}
+
+.table>tbody>tr>* {
+    vertical-align: middle;
+}
+
+.backBooks:hover {
+    text-decoration: underline !important;
+}
