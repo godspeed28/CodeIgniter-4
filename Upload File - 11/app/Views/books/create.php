@@ -61,14 +61,15 @@
                 </div>
                 <div class="mb-3 row">
                     <label for="sampul" class="col-sm-2 col-form-label">Sampul</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-2">
+                        <img src="/img/default.jpg" class="img-thumbnail img-preview" alt="">
+                    </div>
+                    <div class="col-sm-8">
                         <input type="file"
-                            class="form-control <?= (isset($validation) && $validation->hasError('sampul')) ? 'is-invalid' : ''; ?>"
-                            id="sampul" name="sampul">
+                            class="form-control custom <?= session()->getFlashdata('error') ? 'is-invalid' : ''; ?>"
+                            id="sampul" name="sampul" onchange="previewImage()">
                         <div class="invalid-feedback">
-                            <?php if (isset($validation)): ?>
-                                <?= $validation->getError('sampul'); ?>
-                            <?php endif; ?>
+                            <?= session()->getFlashdata('error'); ?>
                         </div>
                     </div>
                 </div>

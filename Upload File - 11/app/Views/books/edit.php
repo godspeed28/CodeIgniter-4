@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-8">
             <h3 class="my-3">Form Edit Book</h3>
-            <form action="/Books/update/<?= $books['id']; ?>" method="post">
+            <form action="/Books/update/<?= $books['id']; ?>" method="post" enctype="multipart/form-data">
                 <?= csrf_field(); ?>
                 <input type="hidden" name="slug" id="slug" value="<?= $books['slug']; ?>">
                 <div class="mb-3 row">
@@ -65,11 +65,19 @@
                 </div>
                 <div class="mb-3 row">
                     <label for="sampul" class="col-sm-2 col-form-label">Sampul</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="sampul" name="sampul"
-                            value="<?= (old('sampul')) ? old('sampul') : $books['sampul'] ?>">
+                    <div class="col-sm-2">
+                        <img src="/img/<?= $books['sampul']; ?>" class="img-thumbnail img-preview" alt="">
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="file"
+                            class="form-control custom <?= session()->getFlashdata('error') ? 'is-invalid' : ''; ?>"
+                            id="sampul" name="sampul" onchange="previewImage()">
+                        <div class="invalid-feedback">
+                            <?= session()->getFlashdata('error'); ?>
+                        </div>
                     </div>
                 </div>
+                <input type="hidden" name="sampulLama" id="sampulLama" value="<?= $books['sampul']; ?>">
                 <div class="mb-3 row">
                     <div class="col-sm-10 ">
                         <button type="submit" class="btn btn-primary">Update Data</button>

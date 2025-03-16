@@ -54,7 +54,7 @@ class Books extends BaseController
     }
     public function save()
     {
-        // validasi input
+        // Validasi input teks
         $rules = [
             'judul' => [
                 'rules' => 'required|is_unique[books.judul]',
@@ -81,45 +81,56 @@ class Books extends BaseController
                 'errors' => [
                     'required' => '{field} buku harus diisi.'
                 ]
-            ],
-            // 'sampul' => 'uploaded[sampul]'
+            ]
         ];
 
         if (!$this->validate($rules)) {
-            // dd($this->validation->getErrors());
-            return redirect()->back()->withInput()->with('validation', $this->validation);
+            return redirect()->back()->withInput()->with('validation', $this->validator);
         }
-        // return redirect()->to('/Books/create')->withInput()->with('validation', $validation);
-        // return redirect()->to('/Books/create')->withInput();
 
-
+        // Validasi manual untuk sampul
         $fileSampul = $this->request->getFile('sampul');
 
-        if ($fileSampul->isValid() && !$fileSampul->hasMoved()) {
+        // Validasi format & ukuran file sampul
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $maxSize = 2048; // 2MB
+
+        if (!$fileSampul->isValid() || $fileSampul->getError() == 4) {
+            $sampulName = 'default.jpg';
+        } else if (!in_array($fileSampul->getExtension(), $allowedExtensions)) {
+            return redirect()->back()->withInput()->with('error', 'Format file tidak valid! Hanya boleh jpg, jpeg, atau png.');
+        } else if ($fileSampul->getSize() > ($maxSize * 1024)) {
+            return redirect()->back()->withInput()->with('error', 'Ukuran file terlalu besar! Maksimal 2MB.');
+        } else {
             $sampulName = $fileSampul->getRandomName();
             $fileSampul->move('img', $sampulName);
-        } else {
-            $sampulName = 'hobbit.jpg'; // Jika tidak ada file, gunakan default
         }
 
-
         $slug = url_title($this->request->getVar('judul'), '-', true);
-        // dd($this->request->getVar());
+
+        // Simpan ke database
         $this->booksModel->save([
             'judul' => $this->request->getVar('judul'),
             'slug' => $slug,
             'genre' => $this->request->getVar('genre'),
             'penulis' => $this->request->getVar('penulis'),
-            'tahun_terbit' => $this->request->getVar('tahun_terbit'),
-            'sampul' => $sampulName
+            'sampul' => $sampulName,
+            'tahun_terbit' => $this->request->getVar('tahun_terbit')
+
         ]);
-
         session()->setFlashdata('pesan', 'Data berhasil ditambahkan.');
-
         return redirect()->to('/Books');
     }
+
     public function delete($id)
     {
+        // cari gambar berdasarkan id
+        $book = $this->booksModel->find($id);
+
+        if ($book['sampul'] !== 'default.jpg') {
+            // hapus gambar
+            unlink('img/' . $book['sampul']);
+        }
         $this->booksModel->delete($id);
         session()->setFlashdata('pesan', 'Data berhasil dihapus.');
         return redirect()->to('/Books');
@@ -177,6 +188,28 @@ class Books extends BaseController
             // $validation = \Config\Services::validation();
             return redirect()->to('/Books/edit/' . $this->request->getVar('slug'))->withInput()->with('validation', $this->validation);
         }
+
+        // Validasi manual untuk sampul
+        $fileSampul = $this->request->getFile('sampul');
+        $fileSampulLama = $this->request->getVar('sampulLama');
+
+        // Validasi format & ukuran file sampul
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $maxSize = 2048; // 2MB
+
+        if (!$fileSampul->isValid() || $fileSampul->getError() == 4) {
+            $fileSampul = $fileSampulLama;
+            $sampulName = $fileSampul;
+        } else if (!in_array($fileSampul->getExtension(), $allowedExtensions)) {
+            return redirect()->back()->withInput()->with('error', 'Format file tidak valid! Hanya boleh jpg, jpeg, atau png.');
+        } else if ($fileSampul->getSize() > ($maxSize * 1024)) {
+            return redirect()->back()->withInput()->with('error', 'Ukuran file terlalu besar! Maksimal 2MB.');
+        } else {
+            $sampulName = $fileSampul->getRandomName();
+            unlink('img/' . $fileSampulLama);
+            $fileSampul->move('img', $sampulName);
+        }
+
         $slug = url_title($this->request->getVar('judul'), '-', true);
         // dd($this->request->getVar());
         $this->booksModel->save([
@@ -185,8 +218,8 @@ class Books extends BaseController
             'slug' => $slug,
             'genre' => $this->request->getVar('genre'),
             'penulis' => $this->request->getVar('penulis'),
-            'tahun_terbit' => $this->request->getVar('tahun_terbit'),
-            'sampul' => $this->request->getVar('sampul')
+            'sampul' => $sampulName,
+            'tahun_terbit' => $this->request->getVar('tahun_terbit')
         ]);
 
         session()->setFlashdata('pesan', 'Data berhasil diubah.');
