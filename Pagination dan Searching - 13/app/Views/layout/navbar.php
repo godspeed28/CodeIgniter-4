@@ -11,6 +11,9 @@
                     <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/Orang">Orang</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/Books">Books</a>
                 </li>
                 <li class="nav-item">
